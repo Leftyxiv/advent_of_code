@@ -28,7 +28,7 @@ left_array.each_with_index do |left, index|
   total += (left.to_i - right.to_i).abs
 end
 
-# puts total
+puts "Part 1 #{total}"
 
 ##########
 # Part 2 #
@@ -46,4 +46,4 @@ left_array.each do |left|
   part_two_total += left.to_i * samesies
 end
 
-puts part_two_total
+puts "Part 2: #{part_two_total}"
