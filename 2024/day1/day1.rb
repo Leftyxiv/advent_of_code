@@ -10,40 +10,22 @@ lines = File.read('2024/day1/input.txt').split("\n")
 # Part 1 #
 ##########
 
-total = 0
-left_array = []
-right_array = []
+left_array, right_array = lines.map { |line| line.split.map(&:to_i) }.transpose
 
-lines.each do |line|
-  separated_values = line.split(' ')
-  left_array << separated_values[0]
-  right_array << separated_values[1]
-end
+total = left_array.sort.zip(right_array.sort).sum { |left, right| (left - right).abs }
 
-left_array.sort!
-right_array.sort!
-
-left_array.each_with_index do |left, index|
-  right = right_array[index]
-  total += (left.to_i - right.to_i).abs
-end
-
-puts "Part 1 #{total}"
+puts "Part 1: #{total}"
 
 ##########
 # Part 2 #
 ##########
 
-part_two_total = 0
+# Count the occurrences of each value in both arrays
+left_counts = left_array.tally
+right_counts = right_array.tally
 
-left_array.each do |left|
-  samesies = 0
-  right_array.each do |right|
-    if left == right
-      samesies += 1
-    end
-  end
-  part_two_total += left.to_i * samesies
+part_two_total = left_counts.sum do |value, left_count|
+  (right_counts[value] || 0) * value
 end
 
 puts "Part 2: #{part_two_total}"

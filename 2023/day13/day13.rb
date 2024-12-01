@@ -1,4 +1,4 @@
-lines = File.readlines('sample.txt').map(&:chomp)
+lines = File.readlines('2023/day13/sample.txt').map(&:chomp)
 
 lines = lines.map { |line| line.split('\n') }
 
