@@ -18,21 +18,17 @@
 ##########
 
 lines = File.readlines("2022/day1/input.txt").map(&:chomp)
-elves_rations = []
-index = 0
-lines.each do |line|
-  if line.empty?
-    index += 1
-    next
-  end
-  elves_rations[index] ||= []
-  elves_rations[index] << line.to_i
+
+elves_rations = lines.slice_before { |line| line.empty? }.map do |group|
+  group.map(&:to_i)
 end
-puts "Highest calorie else: #{elves_rations.map { |rations| rations.sum }.max}"
+
+puts "Highest calorie elf: #{elves_rations.map(&:sum).max}"
 
 ##########
 # Part 2 #
 ##########
 
-sorted_elves_rations = elves_rations.map { |rations| rations.sum }.sort.reverse
-puts "Top 3 elves: #{sorted_elves_rations[0..2].sum}"
+# Sum and sort to get top 3 highest calorie elves
+top_3_total = elves_rations.map(&:sum).max(3).sum
+puts "Top 3 elves: #{top_3_total}"

@@ -2,6 +2,7 @@
 # B X
 # C Z""".split("\n")
 
+
 lines = File.read('2022/day2/input.txt').split("\n")
 
 OPPONENTS = {
