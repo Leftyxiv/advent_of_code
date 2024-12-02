@@ -11,8 +11,6 @@ lines = File.read('2024/day2/input.txt').split("\n")
 # Part 1 #
 ##########
 
-lines = File.read('2024/day2/input.txt').split("\n")
-
 def is_report_safe?(report)
   ascending = report.each_cons(2).all? { |a, b| b > a && (1..3).include?(b - a) }
 
