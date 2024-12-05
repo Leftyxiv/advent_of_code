@@ -41,6 +41,7 @@ end
 
 part_one = 0
 current_page = ''
+part_two_warchest = []
 lines[1].each do |inputs|
   rules_unbroken = true
   updates = inputs.split(',')
@@ -48,6 +49,7 @@ lines[1].each do |inputs|
     first_num, second_num = rule.split('|')
     if updates.include?(first_num) && updates.include?(second_num) && !(updates.include?(first_num) && updates.include?(second_num) && updates.index(first_num) < updates.index(second_num))
       rules_unbroken = false
+      part_two_warchest << updates
     end
   end
   if rules_unbroken
@@ -56,3 +58,58 @@ lines[1].each do |inputs|
 end
 
 puts "Part 1: #{part_one}"
+##########
+# Part 2 #
+##########
+part_two = 0
+part_two_warchest.uniq!
+
+def correctly_ordered?(updates, rules)
+  rules.each do |rule|
+    first, second = rule.split('|')
+    if updates.include?(first) && updates.include?(second)
+      return false unless updates.index(first) < updates.index(second)
+    end
+  end
+  true
+end
+
+def topological_sort(elements, rules)
+  graph = Hash.new { |hash, key| hash[key] = [] }
+  in_degree = Hash.new(0)
+
+  elements.each { |element| in_degree[element] = 0 }
+
+  rules.each do |rule|
+    first, second = rule.split('|')
+    if elements.include?(first) && elements.include?(second)
+      graph[first] << second
+      in_degree[second] += 1
+    end
+  end
+
+  queue = elements.select { |el| in_degree[el].zero? }
+  sorted_order = []
+
+  until queue.empty?
+    node = queue.shift
+    sorted_order << node
+
+    graph[node].each do |neighbor|
+      in_degree[neighbor] -= 1
+      queue << neighbor if in_degree[neighbor].zero?
+    end
+  end
+
+  sorted_order.size == elements.size ? sorted_order : []
+end
+
+part_two_warchest.each do |war_chest|
+  ordered = topological_sort(war_chest, lines[0])
+  unless ordered.empty?
+    part_two += ordered[ordered.size / 2].to_i
+  end
+end
+
+
+puts "Part 2: #{part_two}"
