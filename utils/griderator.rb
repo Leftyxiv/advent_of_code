@@ -1,0 +1,78 @@
+class Griderator5000
+  attr_reader :grid
+
+  def initialize(initial_grid = nil, default_value: nil, rows: nil, cols: nil)
+    if initial_grid
+      @grid = initial_grid.map(&:dup)
+    else
+      raise ArgumentError, "rows and cols must be specified if no initial_grid is given" unless rows && cols
+      @grid = Array.new(rows) { Array.new(cols, default_value) }
+    end
+  end
+
+  def [](row, col)
+    return nil unless in_bounds?(row, col)
+    @grid[row][col]
+  end
+
+  def []=(row, col, value)
+    return unless in_bounds?(row, col)
+    @grid[row][col] = value
+  end
+
+  def in_bounds?(row, col)
+    row >= 0 && col >= 0 && row < @grid.size && col < @grid.first.size
+  end
+
+  def get_homies(row, col, diagonals: false)
+    directions = [
+      [-1, 0], [1, 0],
+      [0, -1], [0, 1]
+    ]
+    if diagonals
+      directions += [
+        [-1, -1], [-1, 1],
+        [1, -1], [1, 1]
+      ]
+    end
+
+    directions.map { |dr, dc| [row + dr, col + dc] }
+              .select { |nr, nc| in_bounds?(nr, nc) }
+  end
+
+  def each_cell
+    @grid.each_with_index do |row, row_idx|
+      row.each_with_index do |cell, col_idx|
+        yield(row_idx, col_idx, cell)
+      end
+    end
+  end
+
+  def find_location(character)
+    each_cell do |row_idx, col_idx, cell|
+      return [row_idx, col_idx] if cell == character
+    end
+    nil
+  end
+
+  def grid_me
+    @grid.map { |row| row.map { |cell| cell.nil? ? '.' : cell }.join(' ') }.join("\n")
+  end
+end
+
+initial_grid = [
+  ['a', 'b', 'c'],
+  ['d', 'e', 'f'],
+  ['g', 'h', 'i']
+]
+
+grid = Griderator5000.new(initial_grid)
+puts "Grid initialized from array:"
+puts grid.grid_me
+
+puts "\nFinding location of 'e':"
+location = grid.find_location('e')
+puts location ? "Found at: #{location}" : "Not found"
+
+puts grid.get_homies(1, 1).inspect
+puts grid.get_homies(1, 1, diagonals: true).inspect
