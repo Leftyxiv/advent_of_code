@@ -1,16 +1,16 @@
 require 'set'
 
-lines = """....#.....
-.........#
-..........
-..#.......
-.......#..
-..........
-.#..^.....
-........#.
-#.........
-......#...""".split("\n")
-# lines = File.read('2024/day6/input.txt').split("\n")
+# lines = """....#.....
+# .........#
+# ..........
+# ..#.......
+# .......#..
+# ..........
+# .#..^.....
+# ........#.
+# #.........
+# ......#...""".split("\n")
+lines = File.read('2024/day6/input.txt').split("\n")
 
 
 def create_grid(lines)
@@ -54,6 +54,12 @@ def move_forward(grid, position, direction, positions_stepped_on_by_elf_lady)
     direction = turn_right(direction)
     new_x = position[0] + direction[0]
     new_y = position[1] + direction[1]
+
+    while grid[new_x][new_y] == '#' do
+      direction = turn_right(direction)
+      new_x = position[0] + direction[0]
+      new_y = position[1] + direction[1]
+    end
 
     if new_x < 0 || new_x >= grid.size || new_y < 0 || new_y >= grid[0].size
       out_of_bounds = true
