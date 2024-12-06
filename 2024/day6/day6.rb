@@ -115,10 +115,6 @@ initial_path.each do |pos|
       break
     end
 
-    if grid[position[0]][position[1]] == '#'
-      direction = turn_right(direction)
-    end
-
     visited_positions_directions[key] = true
   end
 
