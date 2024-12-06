@@ -126,4 +126,4 @@ initial_path.each do |pos|
   grid[row][col] = '.'
 end
 
-puts "Possible loop positions: #{loopses}"
+puts "SO MANY LOOPS: #{loopses}"
