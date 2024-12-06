@@ -127,4 +127,3 @@ initial_path.each do |pos|
 end
 
 puts "Possible loop positions: #{loopses}"
-puts 'should be 1686'
