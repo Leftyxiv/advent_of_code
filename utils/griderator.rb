@@ -58,6 +58,62 @@ class Griderator5000
   def grid_me
     @grid.map { |row| row.map { |cell| cell.nil? ? '.' : cell }.join(' ') }.join("\n")
   end
+
+  def fill_grid_with_stuff(value)
+    each_cell do |row, col, _|
+      @grid[row][col] = value
+    end
+  end
+
+  def map!
+    @grid.each_with_index do |row, row_idx|
+      row.each_with_index do |value, col_idx|
+        @grid[row_idx][col_idx] = yield(value, row_idx, col_idx)
+      end
+    end
+  end
+
+  def map
+    new_grid = @grid.map.with_index do |row, row_idx|
+      row.map.with_index do |cell, col_idx|
+        yield(cell, row_idx, col_idx)
+      end
+    end
+    Griderator5000.new(new_grid)
+  end
+
+  def find_all_locations(character)
+    locations = []
+    each_cell do |row, col, value|
+      locations << [row, col] if value == character
+    end
+    locations
+  end
+
+  def transpose
+    new_grid = @grid.transpose
+    Griderator5000.new(new_grid)
+  end
+
+  def turn_sideways_clockwise
+    new_grid = @grid.map(&:reverse).transpose
+    Griderator5000.new(new_grid)
+  end
+
+  def turn_sideways_the_ther_way
+    new_grid = @grid.map(&:reverse).transpose.map(&:reverse)
+    Griderator5000.new(new_grid)
+  end
+
+  def flip_horizotal
+    new_grid = @grid.map(&:reverse)
+    Griderator5000.new(new_grid)
+  end
+
+  def flip_vertical
+    new_grid = @grid.reverse
+    Griderator5000.new(new_grid)
+  end
 end
 
 initial_grid = [
