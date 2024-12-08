@@ -3,7 +3,7 @@ class Griderator5000
 
   def initialize(initial_grid = nil, default_value: nil, rows: nil, cols: nil)
     if initial_grid
-      @grid = initial_grid.map(&:dup)
+      @grid = initial_grid.map { |line| line.chars }.dup
     else
       raise ArgumentError, "rows and cols must be specified if no initial_grid is given" unless rows && cols
       @grid = Array.new(rows) { Array.new(cols, default_value) }
@@ -45,6 +45,12 @@ class Griderator5000
       row.each_with_index do |cell, col_idx|
         yield(row_idx, col_idx, cell)
       end
+    end
+  end
+
+  def each
+    @grid.each do |row|
+      yield(row)
     end
   end
 
@@ -90,6 +96,14 @@ class Griderator5000
     locations
   end
 
+  def find_all_not_locations(character)
+    locations = []
+    each_cell do |row, col, value|
+      locations << [row, col] if value != character
+    end
+    locations
+  end
+
   def transpose
     new_grid = @grid.transpose
     Griderator5000.new(new_grid)
@@ -114,21 +128,57 @@ class Griderator5000
     new_grid = @grid.reverse
     Griderator5000.new(new_grid)
   end
+
+  def in_line?(point1, point2)
+    row1, col1 = point1
+    row2, col2 = point2
+
+    return true if row1 == row2
+
+    return true if col1 == col2
+
+    return true if (row1 - row2).abs == (col1 - col2).abs
+
+    false
+  end
+
+  def points_in_line(points)
+    result = {}
+
+    points.each do |point|
+      aligned_points = []
+
+      points.each do |other_point|
+        next if point == other_point
+        aligned_points << other_point if in_line?(point, other_point)
+      end
+
+      result[point] = aligned_points
+    end
+
+    result
+  end
+
+  def get_difference(point1, point2)
+    row1, col1 = point1
+    row2, col2 = point2
+    [row2 - row1, col2 - col1]
+  end
 end
 
-initial_grid = [
-  ['a', 'b', 'c'],
-  ['d', 'e', 'f'],
-  ['g', 'h', 'i']
-]
+# initial_grid = [
+#   ['a', 'b', 'c'],
+#   ['d', 'e', 'f'],
+#   ['g', 'h', 'i']
+# ]
 
-grid = Griderator5000.new(initial_grid)
-puts "Grid initialized from array:"
-puts grid.grid_me
+# grid = Griderator5000.new(initial_grid)
+# puts "Grid initialized from array:"
+# puts grid.grid_me
 
-puts "\nFinding location of 'e':"
-location = grid.find_location('e')
-puts location ? "Found at: #{location}" : "Not found"
+# puts "\nFinding location of 'e':"
+# location = grid.find_location('e')
+# puts location ? "Found at: #{location}" : "Not found"
 
-puts grid.get_homies(1, 1).inspect
-puts grid.get_homies(1, 1, diagonals: true).inspect
+# puts grid.get_homies(1, 1).inspect
+# puts grid.get_homies(1, 1, diagonals: true).inspect
