@@ -34,6 +34,11 @@ end
 # end
 # puts "Part 1: #{stone_string.size}"
 
+# stones.tally
+# :37:in `<main>': undefined method `tally' for [57####, 2#, #, 5##, 46#, 1, 10##, 27#]:Array (NoMethodError)
+# puts RUBY_VERSION
+# CODE RUNNER WAS RUNNING 2.6 WHY
+
 def wtf_my_tally_stopped_working(stones)
   tally = Hash.new { 0 }
   stones.each do |stone|
@@ -44,7 +49,7 @@ end
 
 muh_rocks = wtf_my_tally_stopped_working(stones)
 
-75.times do
+75.times do |i|
   muh_next_rocks = Hash.new { 0 }
 
   muh_rocks.each do |stone, count|
@@ -61,7 +66,8 @@ muh_rocks = wtf_my_tally_stopped_working(stones)
     end
     muh_next_rocks[rock_numba.to_i * 2024] += count
   end
+  puts "Part 1: #{muh_rocks.values.sum}" if i == 25
   muh_rocks = muh_next_rocks
 end
 
-puts "Part 1: #{muh_rocks.values.sum}"
+puts "Part 2: #{muh_rocks.values.sum}"
