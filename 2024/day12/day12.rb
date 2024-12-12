@@ -1,7 +1,7 @@
 require_relative '../../utils/griderator'
 require 'set'
 
-lines = File.read('2024/day12/sample3.txt').split("\n")
+lines = File.read('2024/day12/input.txt').split("\n")
 
 grid = Griderator5000.new(lines)
 
@@ -69,7 +69,14 @@ puts "Part 1: #{part_one}"
 # Part Two #
 ############
 
-puts plant_plots.inspect
+def even_more_crap(arr)
+  return 0 if arr.length < 1
+  count = 1
+  (0...arr.length - 1).each do |i|
+    count += 1 if (arr[i] - arr[i + 1]).abs != 1
+  end
+  count
+end
 
 def im_so_over_this(grid, plant, locations)
   sides = {
@@ -83,27 +90,90 @@ def im_so_over_this(grid, plant, locations)
     plot_below = [location[0] + 1, location[1]]
     plot_left = [location[0], location[1] - 1]
     plot_right = [location[0], location[1] + 1]
-    if !locations.include?(plot_above)
+    if !locations.include?(plot_above) #&& !locations.include?(plot_left) || !locations.include?(plot_above) # !locations.include?(plot_right)
       sides[:up] << location
     end
-    if !locations.include?(plot_below)
+    if !locations.include?(plot_below) #&& !locations.include?(plot_left) || !locations.include?(plot_below) && !locations.include?(plot_right)
       sides[:down] << location
     end
-    if !locations.include?(plot_left)
+    if !locations.include?(plot_left) #&& !locations.include?(plot_above) || !locations.include?(plot_left) && !locations.include?(plot_below)
       sides[:left] << location
     end
-    if !locations.include?(plot_right)
+    if !locations.include?(plot_right) #&& !locations.include?(plot_above) || !locations.include?(plot_right) && !locations.include?(plot_below)
       sides[:right] << location
     end
   end
   count = 0
-  left_edge_cols = sides[:left].map { |loc| loc[1] }.uniq
-  right_edge_cols = sides[:right].map { |loc| loc[1] }.uniq
-  top_edge_rows = sides[:up].map { |loc| loc[0] }.uniq
-  bottom_edge_rows = sides[:down].map { |loc| loc[0] }.uniq
-  count += left_edge_cols.size + right_edge_cols.size + top_edge_rows.size + bottom_edge_rows.size
-  puts "Plant: #{plant}, areas: #{locations.size}, count: #{count}"
-  count * locations.size
+  not_loop_count = 0
+  row_mapped_top_locations = Hash.new { |h, k| h[k] = [] }
+  row_mapped_bottom_locations = Hash.new { |h, k| h[k] = [] }
+  col_mapped_left_locations = Hash.new { |h, k| h[k] = [] }
+  col_mapped_right_locations = Hash.new { |h, k| h[k] = [] }
+  sides[:up].each do |loc|
+    row_mapped_top_locations[loc[0]] << loc[1]
+  end
+  sides[:down].each do |loc|
+    row_mapped_bottom_locations[loc[0]] << loc[1]
+  end
+  sides[:left].each do |loc|
+    col_mapped_left_locations[loc[1]] << loc[0]
+  end
+  sides[:right].each do |loc|
+    col_mapped_right_locations[loc[1]] << loc[0]
+  end
+  row_mapped_top_locations.each do |row, cols|
+    # puts "Plant#{plant} #{row} #{cols}"
+    not_loop_count += even_more_crap(cols.sort)
+  end
+  row_mapped_bottom_locations.each do |row, cols|
+    # puts "Plant#{plant} #{row} #{cols}"
+    not_loop_count += even_more_crap(cols.sort)
+  end
+  col_mapped_left_locations.each do |col, rows|
+    # puts "Plant#{plant} #{rows} #{col}"
+    not_loop_count += even_more_crap(rows.sort)
+  end
+  col_mapped_right_locations.each do |col, rows|
+    # puts "Plant#{plant} #{rows} #{col}"
+    not_loop_count += even_more_crap(rows.sort)
+  end
+  # return 4 * locations.size if sides[:up].size == 1 || sides[:down].size == 1 || sides[:left].size == 1 || sides[:right].size == 1
+  #left_edge_cols = left_edge_cols = sides[:left].sort_by { |loc| loc[0] }.map { |loc| loc[1] }#.uniq
+  # right_edge_cols = sides[:right].sort_by { |loc| loc[0] }.map { |loc| loc[1] }#.uniq
+  # top_edge_rows = sides[:up].sort_by { |loc| loc[1] }.map { |loc| loc[0] }#.uniq
+  # bottom_edge_rows = sides[:down].sort_by { |loc| loc[1] }.map { |loc| loc[0] }#.uniq
+  # puts "Plant#{plant} #{left_edge_cols.inspect}"
+  # puts "Plant#{plant} #{right_edge_cols.inspect}"
+  # puts "Plant#{plant} #{top_edge_rows.inspect}"
+  # puts "Plant#{plant} #{bottom_edge_rows.inspect}"
+  # sides.each do |side, loc|
+  #   count += 1
+  #   x, y = loc[0]
+  #   loc.each do |l|
+  #     if side == :up
+  #       if l[0] != x
+  #         count += 1
+  #         x = l[0]
+  #       end
+  #     elsif side == :down
+  #       if l[0] != x
+  #         count += 1
+  #         x = l[0]
+  #       end
+  #     elsif side == :left
+  #       if l[1] != y
+  #       count += 1
+  #       y = l[1]
+  #       end
+  #     elsif side == :right
+  #       if l[1] != y
+  #       count += 1
+  #       y = l[1]
+  #       end
+  #     end
+  #   end
+  # end
+  not_loop_count * locations.size
 end
 
 part_two = 0
@@ -142,3 +212,34 @@ puts "Part 2: #{part_two}"
 
 # puts "Part 2: #{part_two}"
 
+# def even_more_crap(arr)
+#   return 0 if arr.length < 1
+#   count = 1  # Start with 1 because the beginning boundary itself counts
+#   (1...arr.length - 1).each do |i|
+#     count += 1 if arr[i] != arr[i + 1]
+#   end
+#   count
+# end
+# not_loop_count += even_more_crap(left_edge_cols)
+#   not_loop_count += even_more_crap(right_edge_cols)
+#   not_loop_count += even_more_crap(top_edge_rows)
+#   not_loop_count += even_more_crap(bottom_edge_rows)
+
+# left_edge_cols = sides[:left].sort do |locA, locB|
+#   # First compare by the first element
+#   result = locA[0] <=> locB[0]
+#   # If they are the same, compare by the second element
+#   result.zero? ? locA[1] <=> locB[1] : result
+# end.map { |loc| loc[1] }
+# right_edge_cols = sides[:right].sort do |locA, locB|
+#   result = locA[0] <=> locB[0]
+#   result.zero? ? locA[1] <=> locB[1] : result
+# end.map { |loc| loc[1] }
+# top_edge_rows = sides[:up].sort do |locA, locB|
+#   result = locA[1] <=> locB[1]
+#   result.zero? ? locA[0] <=> locB[0] : result
+# end.map { |loc| loc[0] }
+# bottom_edge_rows = sides[:down].sort do |locA, locB|
+#   result = locA[1] <=> locB[1]
+#   result.zero? ? locA[0] <=> locB[0] : result
+# end.map { |loc| loc[0] }
