@@ -22,33 +22,19 @@ def go_win_stuff(prize, a_button, b_button)
   prizeX, prizeY = prize
   a_buttonX, a_buttonY = a_button
   b_buttonX, b_buttonY = b_button
-  if a_buttonX > b_buttonX * 3
-    max_a_times = prizeX / a_buttonX
-    return nil if max_a_times > 100
-    while max_a_times > 0
-      difference = prizeX - (a_buttonX * max_a_times)
-      if difference % b_buttonX == 0
-        max_b_times = difference / b_buttonX
-        return max_a_times * BUTTON_A_COST + max_b_times * BUTTON_B_COST
-      else
-        max_a_times -= 1
-      end
-    end
 
-  else
-    max_b_times = prizeX / b_buttonX
-    return nil if max_b_times > 100
-    while max_b_times > 0
-      difference = prizeX - (b_buttonX * max_b_times)
-      if difference % a_buttonX == 0
-        max_a_times = difference / a_buttonX
-        return max_a_times * BUTTON_A_COST + max_b_times * BUTTON_B_COST
-      else
-        max_b_times -= 1
+  best_cost = Float::INFINITY
+
+  (0..100).each do |a_times|
+    (0..100).each do |b_times|
+      if (a_buttonX * a_times + b_buttonX * b_times == prizeX) &&
+         (a_buttonY * a_times + b_buttonY * b_times == prizeY)
+        total_cost = a_times * BUTTON_A_COST + b_times * BUTTON_B_COST
+        best_cost = [best_cost, total_cost].min
       end
     end
   end
-  nil
+  best_cost == Float::INFINITY ? nil : best_cost
 end
 
 part_one = 0
