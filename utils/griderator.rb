@@ -172,6 +172,33 @@ class Griderator5000
   def width
     @grid.first.size
   end
+
+  def new_location(point, velocity)
+    row, col = point
+    vx, vy = velocity
+
+    new_row = row + vx
+    new_col = col + vy
+
+    if in_bounds?(new_row, new_col)
+      [new_row, new_col]
+    else
+      nil
+    end
+  end
+
+  def new_location_with_wrap(point, velocity)
+    row, col = point
+    vx, vy = velocity
+
+    new_row = (row + vx) % height
+    new_col = (col + vy) % width
+
+    new_row += grid_height if new_row < 0
+    new_col += grid_width if new_col < 0
+
+    [new_row, new_col]
+  end
 end
 
 # initial_grid = [
