@@ -62,7 +62,7 @@ class Griderator5000
   end
 
   def grid_me
-    @grid.map { |row| row.map { |cell| cell.nil? ? '.' : cell }.join(' ') }.join("\n")
+    puts @grid.map { |row| row.map { |cell| cell.nil? ? '.' : cell }.join(' ') }.join("\n")
   end
 
   def fill_grid_with_stuff(value)
@@ -173,7 +173,7 @@ class Griderator5000
     @grid.first.size
   end
 
-  def new_location(point, velocity)
+  def move_to_new_location(point, velocity)
     row, col = point
     vx, vy = velocity
 
@@ -187,7 +187,7 @@ class Griderator5000
     end
   end
 
-  def new_location_with_wrap(point, velocity)
+  def move_to_new_location_with_wrap(point, velocity)
     row, col = point
     vx, vy = velocity
 
