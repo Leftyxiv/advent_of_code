@@ -199,6 +199,10 @@ class Griderator5000
 
     [new_row, new_col]
   end
+
+  def is_wall?(row, col, wall_character: '#')
+    @grid[row, col] == wall_character || @grid[row, col] == nil
+  end
 end
 
 # initial_grid = [

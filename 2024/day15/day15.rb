@@ -87,7 +87,7 @@ def move_fat_robot(grid, robot, direction)
 
   if dr != 0
 
-      found_boxes = find_and_follow_boxes(grid, row + dr, col + dc, direction)
+    found_boxes = find_and_follow_boxes(grid, row + dr, col + dc, direction)
     return robot if found_boxes.include?(nil)
 
     found_boxes.reverse.each do |box|
@@ -159,9 +159,7 @@ def move_fat_robot(grid, robot, direction)
 
   if dr != 0
     stop_ruining_my_life = these_god_forsaken_vertical_boxes(grid, row + dr, col, direction)
-    if stop_ruining_my_life
-      puts "STOP RUINING MY LIFE: #{stop_ruining_my_life.inspect}"
-    end
+    
     found_boxes = find_and_follow_boxes(grid, row + dr, col + dc, direction)
     return robot if found_boxes.include?(nil)
 
@@ -179,14 +177,20 @@ end
 def these_god_forsaken_vertical_boxes(grid, row, col, direction)
   drow, dcol = direction
   boxes = []
-  puts "GODDAMNITLOL #{grid[row + drow, col]}, #{grid[row + drow, col + 1]}" # FIGURE OUT WHY THIS ISN'T RETURNING ANYTHIN
+  is_this_side = false
   while grid[row + drow, col] == '[' && grid[row + drow, col + 1] == ']' do
     boxes << [row + drow, col]
     boxes << [row + drow, col + 1]
     row += drow
+    is_this_side = true
   end
-  unless grid[row + drow, col] == '.' && grid[row + drow, col + 1] == '.'
-    return boxes << [nil]
+  boxes << [row + drow, col] if is_this_side
+  boxes << [row + drow, col + 1] if is_this_side
+  unless grid[row + drow, col] == '.' && grid[row + drow, col + 1] == '.' && is_this_side
+    return boxes << nil
+  end
+  if grid[row + drow, col] == '.' && grid[row + drow, col + 1] == '.' && is_this_side
+    return boxes
   end
 
   while grid[row + drow, col] == ']' && grid[row + drow, col - 1] == '[' do
@@ -194,12 +198,49 @@ def these_god_forsaken_vertical_boxes(grid, row, col, direction)
     boxes << [row + drow, col]
     row += drow
   end
-  unless grid[row + drow, col] == '.' && grid[row + drow, col - 1] == '.'
-    return boxes << [nil]
+  boxes << [row + drow, col - 1] unless is_this_side
+  boxes << [row + drow, col] unless is_this_side
+  unless grid[row + drow, col] == '.' && grid[row + drow, col - 1] == '.' && !is_this_side
+    return boxes << nil
   end
   boxes
 end
 
+# def find_and_follow_boxes(grid, row, col, velocity, visited = Set.new)
+#   dr, dc = velocity
+#   current_pos = [row, col]
+
+#   return [] if visited.include?(current_pos)
+#   visited.add(current_pos)
+
+#   found_boxes = []
+
+#   if grid[row, col] == '[' && grid[row, col + 1] == ']'
+#     found_boxes << current_pos
+#     found_boxes << [row, col + 1]
+#     if grid[row + dr, col] != '#' && grid[row + dr, col + 1] != '#'
+#       above_boxes = find_and_follow_boxes(grid, row + dr, col, velocity, visited)
+#       return [nil] if above_boxes.include?(nil)
+#       found_boxes.concat(above_boxes)
+#     else
+#       return [nil]
+#     end
+#   elsif grid[row, col] == ']' && grid[row, col - 1] == '['
+#     found_boxes << [row, col - 1]
+#     found_boxes << current_pos
+#     if grid[row + dr, col - 1] != '#' && grid[row + dr, col] != '#'
+#       above_boxes = find_and_follow_boxes(grid, row + dr, col - 1, velocity, visited)
+#       return [nil] if above_boxes.include?(nil)
+#       found_boxes.concat(above_boxes)
+#     else
+#       return [nil]
+#     end
+#   elsif grid[row, col] == '#'
+#     return [nil]
+#   end
+
+#   found_boxes
+# end
 def find_and_follow_boxes(grid, row, col, velocity, visited = Set.new)
   dr, dc = velocity
   current_pos = [row, col]
