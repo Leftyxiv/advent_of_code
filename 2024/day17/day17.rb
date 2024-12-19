@@ -1,68 +1,68 @@
-# lines = File.read('2024/day17/sample2.txt').split("\n")
-# require 'set'
-# register_registry = {}
-# program = []
-# lines.each do |line|
-#   register_pattern = /Register (\w+): (\d+)/
-#   match = register_pattern.match(line)
-#   if match
-#     register_registry[match[1].to_sym] = match[2].to_i
-#   end
-#   program_match = line.match(/Program: (.+)/)
-#   program = program_match ? program_match[1].split(',').map(&:to_i) : []
-# end
+lines = File.read('2024/day17/input.txt').split("\n")
+require 'set'
+register_registry = {}
+program = []
+lines.each do |line|
+  register_pattern = /Register (\w+): (\d+)/
+  match = register_pattern.match(line)
+  if match
+    register_registry[match[1].to_sym] = match[2].to_i
+  end
+  program_match = line.match(/Program: (.+)/)
+  program = program_match ? program_match[1].split(',').map(&:to_i) : []
+end
 
-# def simulate_janky_computer(program, register_registry, max_steps = 1000)
-#   ip = 0
-#   output = []
-#   steps = 0
+def simulate_janky_computer(program, register_registry, max_steps = 1000)
+  ip = 0
+  output = []
+  steps = 0
 
-#   while ip < program.size && steps < max_steps
-#     instruction = program[ip]
-#     operand = program[ip + 1]
+  while ip < program.size && steps < max_steps
+    instruction = program[ip]
+    operand = program[ip + 1]
 
-#     case instruction
-#     when 0
-#       register_registry[:A] = register_registry[:A] / (2 ** get_combo_meal(operand, register_registry))
-#     when 1
-#       register_registry[:B] = register_registry[:B] ^ operand
-#     when 2
-#       register_registry[:B] = get_combo_meal(operand, register_registry) % 8
-#     when 3
-#       if register_registry[:A] != 0
-#         ip = operand
-#         next
-#       end
-#     when 4
-#       register_registry[:B] = register_registry[:B] ^ register_registry[:C]
-#     when 5
-#       output << (get_combo_meal(operand, register_registry) % 8)
-#     when 6
-#       register_registry[:B] = register_registry[:A] / (2 ** get_combo_meal(operand, register_registry))
-#     when 7
-#       register_registry[:C] = register_registry[:A] / (2 ** get_combo_meal(operand, register_registry))
-#     end
+    case instruction
+    when 0
+      register_registry[:A] = register_registry[:A] / (2 ** get_combo_meal(operand, register_registry))
+    when 1
+      register_registry[:B] = register_registry[:B] ^ operand
+    when 2
+      register_registry[:B] = get_combo_meal(operand, register_registry) % 8
+    when 3
+      if register_registry[:A] != 0
+        ip = operand
+        next
+      end
+    when 4
+      register_registry[:B] = register_registry[:B] ^ register_registry[:C]
+    when 5
+      output << (get_combo_meal(operand, register_registry) % 8)
+    when 6
+      register_registry[:B] = register_registry[:A] / (2 ** get_combo_meal(operand, register_registry))
+    when 7
+      register_registry[:C] = register_registry[:A] / (2 ** get_combo_meal(operand, register_registry))
+    end
 
-#     ip += 2
-#     steps += 1
-#     # break if output.length >= program.size
-#   end
+    ip += 2
+    steps += 1
+    # break if output.length >= program.size
+  end
 
-#   output
-# end
+  output
+end
 
 
-# def get_combo_meal(operand, register_registry)
-#   case operand
-#   when 0..3 then operand
-#   when 4 then register_registry[:A]
-#   when 5 then register_registry[:B]
-#   when 6 then register_registry[:C]
-#   else raise 'You broke it dude'
-#   end
-# end
+def get_combo_meal(operand, register_registry)
+  case operand
+  when 0..3 then operand
+  when 4 then register_registry[:A]
+  when 5 then register_registry[:B]
+  when 6 then register_registry[:C]
+  else raise 'You broke it dude'
+  end
+end
 
-# puts "Part 1: #{simulate_janky_computer(program, register_registry).join(', ').gsub(' ', '')}"
+puts "Part 1: #{simulate_janky_computer(program, register_registry).join(', ').gsub(' ', '')}"
 
 
 # # def is_this_going_to_break_my_laptops_memory(initial_b, initial_c, program)
@@ -164,59 +164,63 @@
 # # puts "Part 2: #{initial_a}"
 # # # ***************************
 
-# def last_try_then_bed(program)
-#   output_sequence = []
+def last_try_then_bed(program)
+  output_sequence = []
 
-#   # Process potential last states
-#   candidates = (0..7).map { |i| i * 8 }
+  # Process potential last states
+  candidates = (0..7).map { |i| i * 8 }
 
-#   program.reverse_each do |expected_output|
-#     new_candidates = []
-#     candidates.each do |candidate|
-#       (0..7).each do |j|
-#         # The `j` here can be viewed as addresses or transformed bitwise accounts
-#         possible_value = (candidate << 3) + j
-#         if possible_value % 8 == expected_output
-#           new_candidates << possible_value
-#         end
-#       end
-#     end
-#     candidates = new_candidates.uniq
-#   end
+  program.reverse_each do |expected_output|
+    new_candidates = []
+    candidates.each do |candidate|
+      (0..7).each do |j|
+        # The `j` here can be viewed as addresses or transformed bitwise accounts
+        possible_value = (candidate << 3) + j
+        if possible_value % 8 == expected_output
+          new_candidates << possible_value
+        end
+      end
+    end
+    candidates = new_candidates.uniq
+  end
+  candidates.each do |candidate|
+    puts "Candidate: #{candidate << 3}"
+  end
+  candidates.min
+end
 
-#   candidates.min
-# end
-
-# puts "Part 2: #{last_try_then_bed(program) << 3}"
+puts "Part 2: #{last_try_then_bed(program) << 3}"
+answer = simulate_janky_computer(program, { A: 108216895980163856, B: 0, C: 0 })
+puts "Testing: #{answer.join(', ').gsub(' ', '')}"
 
 ###### GPT1-o HELPED ME WITH EVERYTHING BELOW THIS LINE ######
 # Function to extract operands from 'out' instructions
-def extract_out_outputs(program)
-  outputs = []
-  i = 0
-  while i < program.size
-    opcode = program[i]
-    operand = program[i + 1]
-    if opcode == 5 # 'out' opcode
-      # Determine operand value based on combo rules
-      case operand
-      when 0..3
-        value = operand
-      when 4
-        value = :A
-      when 5
-        value = :B
-      when 6
-        value = :C
-      else
-        raise "Invalid combo operand: #{operand}"
-      end
-      outputs << operand
-    end
-    i += 2
-  end
-  outputs
-end
+# def extract_out_outputs(program)
+#   outputs = []
+#   i = 0
+#   while i < program.size
+#     opcode = program[i]
+#     operand = program[i + 1]
+#     if opcode == 5 # 'out' opcode
+#       # Determine operand value based on combo rules
+#       case operand
+#       when 0..3
+#         value = operand
+#       when 4
+#         value = :A
+#       when 5
+#         value = :B
+#       when 6
+#         value = :C
+#       else
+#         raise "Invalid combo operand: #{operand}"
+#       end
+#       outputs << operand
+#     end
+#     i += 2
+#   end
+#   outputs
+# end
 
 # Function to compute the minimal A based on the sequence of outputs
 def compute_minimal_A(outputs)
@@ -228,81 +232,81 @@ def compute_minimal_A(outputs)
   minimal_A
 end
 
-# Simulation Function (Simplified for Part 2)
-def simulate_janky_computer(program, register_registry, max_steps = 1000)
-  ip = 0
-  output = []
-  steps = 0
+# # Simulation Function (Simplified for Part 2)
+# def simulate_janky_computer(program, register_registry, max_steps = 10**6)
+#   ip = 0
+#   output = []
+#   steps = 0
 
-  while ip < program.size && steps < max_steps
-    instruction = program[ip]
-    operand = program[ip + 1] || 0
+#   while ip < program.size && steps < max_steps
+#     instruction = program[ip]
+#     operand = program[ip + 1] || 0
 
-    case instruction
-    when 0
-      # adv instruction
-      denominator = 2 ** get_combo_value(operand, register_registry)
-      register_registry[:A] = register_registry[:A] / denominator
-    when 1
-      # bxl instruction
-      register_registry[:B] ^= operand
-    when 2
-      # bst instruction
-      value = get_combo_value(operand, register_registry) % 8
-      register_registry[:B] = value
-    when 3
-      # jnz instruction
-      if register_registry[:A] != 0
-        ip = operand
-        steps += 1
-        next
-      end
-    when 4
-      # bxc instruction
-      register_registry[:B] ^= register_registry[:C]
-    when 5
-      # out instruction
-      value = get_combo_value(operand, register_registry) % 8
-      output << value
-    when 6
-      # bdv instruction
-      denominator = 2 ** get_combo_value(operand, register_registry)
-      register_registry[:B] = register_registry[:A] / denominator
-    when 7
-      # cdv instruction
-      denominator = 2 ** get_combo_value(operand, register_registry)
-      register_registry[:C] = register_registry[:A] / denominator
-    else
-      raise "Unknown opcode: #{instruction}"
-    end
+#     case instruction
+#     when 0
+#       # adv instruction
+#       denominator = 2 ** get_combo_value(operand, register_registry)
+#       register_registry[:A] = register_registry[:A] / denominator
+#     when 1
+#       # bxl instruction
+#       register_registry[:B] ^= operand
+#     when 2
+#       # bst instruction
+#       value = get_combo_value(operand, register_registry) % 8
+#       register_registry[:B] = value
+#     when 3
+#       # jnz instruction
+#       if register_registry[:A] != 0
+#         ip = operand
+#         steps += 1
+#         next
+#       end
+#     when 4
+#       # bxc instruction
+#       register_registry[:B] ^= register_registry[:C]
+#     when 5
+#       # out instruction
+#       value = get_combo_value(operand, register_registry) % 8
+#       output << value
+#     when 6
+#       # bdv instruction
+#       denominator = 2 ** get_combo_value(operand, register_registry)
+#       register_registry[:B] = register_registry[:A] / denominator
+#     when 7
+#       # cdv instruction
+#       denominator = 2 ** get_combo_value(operand, register_registry)
+#       register_registry[:C] = register_registry[:A] / denominator
+#     else
+#       raise "Unknown opcode: #{instruction}"
+#     end
 
-    # Logging each step for debugging
-    puts "Step #{steps}: IP=#{ip}, Opcode=#{instruction}, Operand=#{operand}, A=#{register_registry[:A]}, B=#{register_registry[:B]}, C=#{register_registry[:C]}, Output=#{output.last.inspect}"
+#     # Logging each step for debugging
+#     puts "Step #{steps}: IP=#{ip}, Opcode=#{instruction}, Operand=#{operand}, A=#{register_registry[:A]}, B=#{register_registry[:B]}, C=#{register_registry[:C]}, Output=#{output.last.inspect}"
 
-    ip += 2
-    steps += 1
-    break if output.length >= program.size
-  end
+#     ip += 2
+#     steps += 1
+#     break if output.length >= program.size
+#   end
 
-  output
-end
-# Helper function to get the operand value based on combo rules
-def get_combo_value(operand, registers)
-  case operand
-  when 0..3
-    operand
-  when 4
-    registers[:A]
-  when 5
-    registers[:B]
-  when 6
-    registers[:C]
-  else
-    raise "Invalid combo operand: #{operand}"
-  end
-end
+#   output
+# end
+# # Helper function to get the operand value based on combo rules
+# def get_combo_value(operand, registers)
+#   case operand
+#   when 0..3
+#     operand
+#   when 4
+#     registers[:A]
+#   when 5
+#     registers[:B]
+#   when 6
+#     registers[:C]
+#   else
+#     raise "Invalid combo operand: #{operand}"
+#   end
+# end
 
-# Main Execution Flow
+# # Main Execution Flow
 
 # Read and parse the input file
 lines = File.read('2024/day17/input.txt').split("\n")
@@ -323,7 +327,7 @@ end
 
 # Part 1: Simulate the program and collect outputs
 part1_output = simulate_janky_computer(program, register_registry)
-puts "Part 1: #{part1_output.join(',')}"
+# puts "Part 1: #{part1_output.join(',')}"
 
 # Part 2: Compute minimal A to output the program itself
 
@@ -332,7 +336,7 @@ desired_outputs = program.dup
 
 # Compute minimal A based on desired outputs
 minimal_A = compute_minimal_A(desired_outputs) << 3
-puts "Computed minimal A: #{minimal_A}"
+# puts "Computed minimal A: #{minimal_A}"
 
 # Validate by simulating the program with computed minimal A
 validation_registers = { A: minimal_A, B: 0, C: 0 }
