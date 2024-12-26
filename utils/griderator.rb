@@ -203,6 +203,40 @@ class Griderator5000
   def is_wall?(row, col, wall_character: '#')
     @grid[row, col] == wall_character || @grid[row, col] == nil
   end
+
+  def bfs(start_row, start_col, dilineator = '#')
+    steps = Array.new(@grid.size) { Array.new(@grid.first.size, Float::INFINITY) }
+
+    queue = []
+
+    steps[start_row][start_col] = 0
+    queue << [start_row, start_col]
+
+    until queue.empty?
+      current = queue.shift
+      current_row, current_col = current
+      current_steps = steps[current_row][current_col]
+
+      get_homies(current_row, current_col).each do |neighbor_row, neighbor_col|
+        next if @grid[neighbor_row][neighbor_col] == dilineator
+
+        if steps[neighbor_row][neighbor_col] == Float::INFINITY
+          steps[neighbor_row][neighbor_col] = current_steps + 1
+          queue << [neighbor_row, neighbor_col]
+        end
+      end
+    end
+
+    steps
+  end
+
+  def dup
+    Griderator5000.new(@grid.map(&:dup))
+  end
+
+  def shallow_copy
+    Griderator5000.new(@grid)
+  end
 end
 
 # initial_grid = [

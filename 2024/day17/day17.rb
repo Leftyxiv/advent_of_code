@@ -1,4 +1,4 @@
-lines = File.read('2024/day17/input.txt').split("\n")
+lines = File.read('2024/day17/sample2.txt').split("\n")
 require 'set'
 register_registry = {}
 program = []
@@ -189,8 +189,8 @@ def last_try_then_bed(program)
   candidates.min
 end
 
-puts "Part 2: #{last_try_then_bed(program) << 3}"
-answer = simulate_janky_computer(program, { A: 108216895980163856, B: 0, C: 0 })
+puts "Part 2: #{last_try_then_bed(program)}"
+answer = simulate_janky_computer(program, { A: 130504923271952, B: 0, C: 0 })
 puts "Testing: #{answer.join(', ').gsub(' ', '')}"
 
 ###### GPT1-o HELPED ME WITH EVERYTHING BELOW THIS LINE ######
@@ -309,7 +309,7 @@ end
 # # Main Execution Flow
 
 # Read and parse the input file
-lines = File.read('2024/day17/input.txt').split("\n")
+lines = File.read('2024/day17/sample2.txt').split("\n")
 
 register_registry = {}
 program = []
@@ -324,6 +324,7 @@ lines.each do |line|
     program = program_match[1].split(',').map(&:to_i)
   end
 end
+
 
 # Part 1: Simulate the program and collect outputs
 part1_output = simulate_janky_computer(program, register_registry)
@@ -347,6 +348,8 @@ if produced_outputs == desired_outputs
   puts "Part 2: #{minimal_A}"
 else
   puts "Validation Failed: Produced outputs do not match desired outputs."
+  puts "Computed minimal A: #{minimal_A}"
   puts "Produced Outputs: #{produced_outputs.join(',')}"
-  puts "Desired Outputs: #{desired_outputs.join(',')}"
+  puts "Desired  Outputs: #{desired_outputs.join(',')}"
 end
+
