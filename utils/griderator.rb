@@ -65,6 +65,14 @@ class Griderator5000
     puts @grid.map { |row| row.map { |cell| cell.nil? ? '.' : cell }.join(' ') }.join("\n")
   end
 
+  def fill(range_rows, range_cols, value)
+    range_rows.each do |row|
+      range_cols.each do |col|
+        @grid[row][col] = value
+      end
+    end
+  end
+
   def fill_grid_with_stuff(value)
     each_cell do |row, col, _|
       @grid[row][col] = value
