@@ -1,44 +1,76 @@
-input = File.read('2022/day5/sample.txt')# .split("\n\n")
+boxes, movements = File.read('2022/day5/input.txt').split("\n\n")
 
-columns = Array.new(9) { [] }
+##########
+# Part 1 #
+##########
 
-lines = input.split("\n\n").reverse.drop(1)
-puts lines.inspect
-number_of_columns = lines.last.scan(/\[\w\]/).length
-puts lines.last.scan(/\[\w\]/).inspect, '----------'
-columns = Array.new(number_of_columns) { [] }
-
-lines.each do |line|
-  (0...number_of_columns).each do |i|
-    char_index = 1 + i * 4 # Calculate index based on column offset
-    puts  "char_index: #{char_index}"
-    columns[i] << line[char_index] if line[char_index] =~ /[A-Z]/
+boxes = boxes.split("\n").reverse
+stack_locations = {}
+boxes[0].each_char.with_index do |char, index|
+  if char != ' '
+    stack_locations[index] = []
   end
 end
 
-# lines.each do |line|
-#   columns[0] << line[1] if line[1] =~ /[A-Z]/
-#   columns[1] << line[5] if line[5] =~ /[A-Z]/
-#   columns[2] << line[9] if line[9] =~ /[A-Z]/
-# end
+boxes[1..-1].each do |box|
+  stack_locations.each do |location, arr|
+    stack_locations[location] << (box[location]) if box[location] != ' '
+  end
+end
 
-instructions = input.split("\n\n")[1]
-
-movement_tuples = instructions.lines.map do |line|
+movement_tuples = movements.lines.map do |line|
   match_data = line.match(/move (\d+) from (\d+) to (\d+)/)
   [match_data[1].to_i, match_data[2].to_i, match_data[3].to_i] if match_data
 end
 
-part_one = ''
+stack_map = {}
+
+i = 1
+stack_locations.each do |location, arr|
+  new_arr = []
+  until arr.empty?
+    new_arr << arr.pop
+  end
+  stack_map[i] = new_arr.reverse
+  i += 1
+end
+
+part_two_stax = Marshal.load(Marshal.dump(stack_map))
 
 movement_tuples.each do |tuple|
   tuple[0].times do
-    puts "tuple: #{tuple}"
-    puts columns.inspect
-    #columns[tuple[2] - 1] << columns[tuple[1] - 1].pop if columns[tuple[1] - 1][-1]
+    char_to_move = stack_map[tuple[1]].pop
+    stack_map[tuple[2]] << char_to_move
   end
 end
-columns.each do |column|
- # part_one += column[-1] if column[-1]
+
+part_one = ''
+
+stack_map.each do |_, arr|
+  part_one += arr[-1] if arr[-1]
 end
+
 puts "Part 1: #{part_one}"
+
+##########
+# Part 2 #
+####@#####
+part_two = ''
+movement_tuples.each do |tuple|
+  new_stack_method = ''
+  tuple[0].times do
+    char_to_move = part_two_stax[tuple[1]].pop
+    new_stack_method += char_to_move
+  end
+  new_stack_method.reverse!
+  new_stack_method.each_char do |char|
+    part_two_stax[tuple[2]] << char
+  end
+end
+part_one = ''
+
+part_two_stax.each do |_, arr|
+  part_two += arr[-1] if arr[-1]
+end
+
+puts "Part 1: #{part_two}"
